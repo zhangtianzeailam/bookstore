@@ -130,8 +130,16 @@ pos_t Memoryriver::getHeaderPos(int id) {
   std::unique_ptr<MemoryriverHeader> hd(new MemoryriverHeader);
   while ((cnt++) < id) {
     getT(now, *hd);
+    if (hd->nxt == nullpos) {
+      MemoryriverHeader nhd;
+      nhd.nxt = nullpos;
+      ::memset(nhd.data, 0, sizeof(nhd.data));
+      hd->nxt = allocT(nhd);
+      putT(now, *hd);
+    }
     now = hd->nxt;
     assert(now != nullpos);
   }
+  return now;
   return now;
 }
