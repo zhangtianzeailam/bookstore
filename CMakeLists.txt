@@ -3,7 +3,7 @@ project(untitled7)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(untitled7
+add_executable(code
         database.h
         Memoryriver.h
         Memoryriver.h
