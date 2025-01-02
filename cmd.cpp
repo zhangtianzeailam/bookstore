@@ -11,107 +11,47 @@ using namespace ci;
 #define _GOODTK(tk) ((tk).cmdB4param and not (tk).fail_param)
 #define GOODTK Massert(_GOODTK(tk), "bad command")
 
-
 Tokenized ci::tokenize(std::string s) {
-  Tokenized res;
+  Tokenized res{};
   res.raw = s;
   res.cmdB4param = true;
 
   int len = (int)s.size();
-  bool cmd = true;
+  std::vector<std::string> &sp = res.splited;
+  std::string now = "";
   for (int i = 0, i_; i < len; i = i_) {
-    while (i < len && s[i] == ' ')
-      ++i;
-    bool inside_quote = false;
-    bool backslash = false;
-    if (s[i] != '-') {
-      std::string cur;
-      if (not cmd)
-        throw Error("unexpected token");
-      for (i_ = i; i_ < len; ++i_) {
-        if (backslash) {
-          cur += s[i_];
-          backslash = false;
-        } else if (s[i_] == '"') {
-          if (inside_quote) {
-            inside_quote = false;
-          } else {
-            inside_quote = true;
-          }
-        } else if (s[i_] == ' ') {
-          if (inside_quote)
-            cur += s[i_];
-          else
-            break;
-        } else
-          cur += s[i_];
-      }
-      if (backslash)
-        throw Error("tokenize: backslash expected one charactor, read eol");
-      if (cur != "")
-        res.command.push_back(cur);
-    } else {
-      std::string key, val;
-      cmd = false;
-      for (i_ = i + 1; i_ < len; ++i_) {
-        if (backslash) {
-          key += s[i_];
-          backslash = false;
-        } else if (s[i_] == '"') {
-          if (inside_quote) {
-            inside_quote = false;
-          } else {
-            inside_quote = true;
-          }
-        } else if (s[i_] == ' ') {
-          if (inside_quote)
-            key += s[i_];
-          else {
-            ++i_;
-            break;
-          }
-        } else if (s[i_] == '=') {
-          if (not inside_quote) {
-            ++i_;
-            break;
-          }
-        } else
-          key += s[i_];
-      }
-      if (backslash)
-        throw Error("tokenize: backslash expected one charactor, read eol");
-      for (; i_ < len; ++i_) {
-        if (backslash) {
-          val += s[i_];
-          backslash = false;
-        } else if (s[i_] == '"') {
-          if (inside_quote) {
-            inside_quote = false;
-          } else {
-            inside_quote = true;
-          }
-        } else if (s[i_] == ' ') {
-          if (inside_quote)
-            val += s[i_];
-          else
-            break;
-        } else if (s[i_] == '=') {
-          if (not inside_quote)
-            break;
-        } else
-          val += s[i_];
-      }
-      if (backslash)
-        throw Error("tokenize: backslash expected one charactor, read eol");
-      if (res.param.count(key))
-        throw Error("tokenize: duplicated parameter");
-      res.param[key] = val;
+    if (s[i] == ' ') {
+      i_ = i + 1;
+      continue;
     }
+    for (i_ = i; i_ < len and s[i_] != ' '; ++i_)
+      now += s[i_];
+    assert(now != "");
+    sp.push_back(now), now = "";
   }
+  for (int i = 0, cmd = true; i < (int)sp.size(); ++i)
+    if (sp[i][0] == '-') {
+      cmd = false;
+      int p = 1;
+      for (; p < (int)sp[i].size(); ++p)
+        if (sp[i][p] == '=')
+          break;
+      if (p == 1 or p >= (int)sp[i].size() - 1)
+        res.command.push_back(sp[i]), res.fail_param = true;
+      else {
+        std::string key = sp[i].substr(1, p - 1);
+        if (res.param.count(key))
+          res.command.push_back(sp[i]), res.fail_param = true;
+        else
+          res.param[key] = sp[i].substr(p + 1);;
+      }
+    } else {
+      res.command.push_back(sp[i]);
+      if (not cmd)
+        res.cmdB4param = false;
+    }
   return res;
 }
-
-
 
 void Ci::process_one() {
   std::string s;

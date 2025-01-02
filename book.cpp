@@ -125,7 +125,7 @@ void Bookstore::showByISBN(ISBN_t ISBN) {
   try {
     askByISBN(ISBN).print();
   } catch(const Error &) {
-    std::cout<<"\r";
+    std::cout<<"\n";
   }
 }
 
@@ -139,7 +139,7 @@ void Bookstore::showByName(bookname_t bookname) {
         return ret;
         });
     if (books.empty())
-      std::cout<<"\r";
+      std::cout<<"\n";
     else {
       std::sort(books.begin(), books.end(), [&](auto &u, auto &v) { return u.ISBN < v.ISBN; });
       for (auto &b : books)
@@ -160,14 +160,14 @@ void Bookstore::showByAuthor(author_t author) {
         return ret;
         });
     if (books.empty())
-      std::cout<<"\r";
+      std::cout<<"\n";
     else {
       std::sort(books.begin(), books.end(), [&](auto &u, auto &v) { return u.ISBN < v.ISBN; });
       for (auto &b : books)
         b.print();
     }
   } catch(const Error &) {
-    std::cout<<"\r";
+    std::cout<<"\n";
   }
 }
 
@@ -181,14 +181,14 @@ void Bookstore::showByKeyword(keyword_t keyword) {
         return ret;
         });
     if (books.empty())
-      std::cout<<"\r";
+      std::cout<<"\n";
     else {
       std::sort(books.begin(), books.end(), [&](auto &u, auto &v) { return u.ISBN < v.ISBN; });
       for (auto &b : books)
         b.print();
     }
   } catch(const Error &) {
-    std::cout<<"\r";
+    std::cout<<"\n";
   }
 }
 
@@ -201,14 +201,14 @@ void Bookstore::showAll() {
         return ret;
         });
     if (books.empty())
-      std::cout<<"\r";
+      std::cout<<"\n";
     else {
       std::sort(books.begin(), books.end(), [&](auto &u, auto &v) { return u.ISBN < v.ISBN; });
       for (auto &b : books)
         b.print();
     }
   } catch(const Error &) {
-    std::cout<<"\r";
+    std::cout<<"\n";
   }
 }
 
@@ -221,6 +221,6 @@ void Bookstore::buy(ISBN_t ISBN, int quantity) {
   b.quantity -= quantity;
   bf.putT(pos, b);
   insertBook(pos);
-  std::cout<<std::fixed<<std::setprecision(2)<<quantity * b.price;
+  std::cout<<std::fixed<<std::setprecision(2)<<quantity * b.price<<std::endl;
   Finance::getInstance().income(quantity * b.price);
 }

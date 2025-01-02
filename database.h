@@ -62,6 +62,8 @@ std::vector<Val> Database<Key, Val, KeyCmp, KeyEq, header_id>::getAll() {
   std::function<void(const Node &, int)> dfs = [&](const Node &n, int dep) {
     if (dep == header.depth) {
       for (int i = 0; i < n.size; ++i) {
+        if (n.chd[i] == nullpos)
+          continue;
         Val tmp{}; m.getT(n.chd[i], tmp);
         ret.push_back(tmp);
       }
@@ -327,7 +329,7 @@ std::pair<pos_t, Val> Database<Key, Val, KeyCmp, KeyEq, header_id>::getLow(Key k
     m.getT(pos, val);
     return {pos, val};
   }
-  throw Error("");
+  throw Error("getLow: not found");
 }
 
 template<class Key, class Val, auto KeyCmp, auto KeyEq, int header_id>

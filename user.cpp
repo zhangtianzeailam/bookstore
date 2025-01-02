@@ -10,11 +10,14 @@ void userCenter::login(userid_t userid, password_t password) {
   auto ac = db.get(userid);
   if (password != "" and ac.password != password)
     throw Error("login: wrong password");
-  // errf("DEBUG\n");
-  auto &cur = login_stack.back();
-  sync(cur);
-  if (password == "" and ac.privilege >= cur.privilege)
-    throw Error("login: not enough privilege");
+  if (password == "") {
+    if (login_stack.size() == 1)
+      throw Error("");
+    auto &cur = login_stack.back();
+    sync(cur);
+    if (ac.privilege >= cur.privilege)
+      throw Error("login: not enough privilege");
+  }
   login_stack.push_back(ac);
   select_stack.push_back(nullid);
 }

@@ -49,7 +49,7 @@ static bool visibleChar(char ch) {
 }
 
 static bool validUserIDChar(char ch) {
-  return ('a' <= ch and ch <= 'z') or ('A' <= ch and ch <= 'Z') or ('0' <= ch and ch <= '9');
+  return ('a' <= ch and ch <= 'z') or ('A' <= ch and ch <= 'Z') or ('0' <= ch and ch <= '9') or ch == '_';
 }
 
 static bool inside(char c, const char *s) {

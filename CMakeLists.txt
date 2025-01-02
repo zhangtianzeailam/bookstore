@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 20)
 add_executable(code
         database.h
         Memoryriver.h
-        Memoryriver.h
+        Memoryriver.cpp
         user.cpp
         user.cpp
         book.cpp
